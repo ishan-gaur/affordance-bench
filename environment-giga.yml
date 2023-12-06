@@ -8,4 +8,10 @@ dependencies:
   - pytorch==1.8.0
   - torchaudio==0.8.0
   - torchvision==0.9.0
+  - pytorch-scatter
+  - freeglut
+  - pyopengl
+  - libglu
+  - mesa-libgl-cos6-x86_64
+  - mesalib
 prefix: /home/ishang/miniconda3/envs/giga
