@@ -35,35 +35,23 @@ def run_command_on_subdirectories(directory_path):
             for file in rgb_images_folder.glob("*.png"):
                 rgb_images_list.append(file)
     
-    for rgb_image in tqdm(rgb_images_list, desc="Processing images"):
-        rgb_image_path = rgb_image.resolve()
-        subdirectory = rgb_image_path.parent.parent
-        
-        program = f"""
-        python {vrb_repo}/aff_bench_inference.py --image {rgb_image_path} \
-        --output {subdirectory}/vrb/{rgb_image.name} --obj_list {giga_repo}/object_list.txt \
-        --model_path {vrb_repo}/models/model_checkpoint_1249.pth.tar \
-        --max_box 5
-        """
-        command = program
-
-        def run_command(command, debug=False):
-            if debug:
-                process = subprocess.Popen(command, shell=True, executable="/bin/bash")
-                process.wait()
-                return ""
-            else:
-                process = subprocess.Popen(command, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                stdout, _ = process.communicate()
-                stdout = stdout.decode("utf-8")
-                return stdout
-
-        stdout = run_command(command, debug=debug)
-        if "All done !" not in stdout and not debug:
-            print(f"Failed image: {rgb_image_path}")
-            print(f"Associated stdout: {stdout}")
-        elif not debug:
-            print(f"Processed image: {rgb_image_path}")
+    image_list_file = Path.cwd() / "image_list.txt"
+    
+    with open(image_list_file, "w") as f:
+        for rgb_image in rgb_images_list:
+            subdirectory = rgb_image.parent.parent
+            vrb_folder = subdirectory / "vrb"
+            output_image = vrb_folder / rgb_image.name
+            f.write(f"{rgb_image},{output_image}\n")
+    
+    program = f"""
+    python {vrb_repo}/aff_bench_inference.py --image_list {image_list_file} \
+    --obj_list {giga_repo}/object_list.txt \
+    --model_path {vrb_repo}/models/model_checkpoint_1249.pth.tar \
+    --max_box 5
+    """
+    command = program
+    subprocess.run(command, shell=True)
 
 # Example usage
 if len(sys.argv) != 2:
