@@ -1,0 +1,15 @@
+numpy==1.19.0
+scipy
+pandas
+matplotlib
+open3d==0.14.1
+catkin_pkg
+pybullet==2.7.9
+pytorch-ignite
+tensorboard
+tqdm
+trimesh
+urdfpy
+cython
+scikit-image
+pykdtree
