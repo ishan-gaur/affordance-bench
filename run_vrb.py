@@ -5,6 +5,7 @@ from tqdm import tqdm
 import subprocess
 vrb_repo = Path("~/vrb").expanduser()
 giga_repo = Path("~/GIGA").expanduser()
+debug = True
 
 def run_command_on_subdirectories(directory_path):
     directory = Path(directory_path)
@@ -46,17 +47,22 @@ def run_command_on_subdirectories(directory_path):
         """
         command = program
 
-        def run_command(command):
-            process = subprocess.Popen(command, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            stdout, _ = process.communicate()
-            stdout = stdout.decode("utf-8")
-            return stdout
+        def run_command(command, debug=False):
+            if debug:
+                process = subprocess.Popen(command, shell=True, executable="/bin/bash")
+                process.wait()
+                return ""
+            else:
+                process = subprocess.Popen(command, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                stdout, _ = process.communicate()
+                stdout = stdout.decode("utf-8")
+                return stdout
 
-        stdout = run_command(command)
-        if "All done !" not in stdout:
+        stdout = run_command(command, debug=debug)
+        if "All done !" not in stdout and not debug:
             print(f"Failed image: {rgb_image_path}")
             print(f"Associated stdout: {stdout}")
-        else:
+        elif not debug:
             print(f"Processed image: {rgb_image_path}")
 
 # Example usage
