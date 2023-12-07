@@ -160,3 +160,5 @@ cython_debug/
 #.idea/
 
 image_list.txt
+aff-bench/
+.DS_store
