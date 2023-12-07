@@ -1,10 +1,12 @@
+from datetime import datetime
 from pathlib import Path
 from warnings import warn
 
+import numpy as np
 import pandas as pd
 
 from config import EXP_DIR, GIGA_IMAGES_FOLDER, VRB_IMAGES_FOLDER
-from config import EVAL_FILE
+from config import EVAL_FILE, EVAL_COLS, TRIAL_ID, RUN_PATH, GIGA_PATH, VRB_PATH, ANNOTATED
 
 def setup():
     runs = get_all_runs(EXP_DIR)
@@ -23,13 +25,13 @@ def setup():
             continue
 
         update_df = pd.DataFrame({
-            'trial_id': trials,
-            'run_path': [run_path] * len(trials),
-            'giga_image': giga_paths,
-            'vrb_image': vrb_images
+            TRIAL_ID: trials,
+            RUN_PATH: [run_path] * len(trials),
+            GIGA_PATH: giga_paths,
+            VRB_PATH: vrb_images
         })
 
-        update_eval_df(update_df)
+        update_eval_df(update_df, overwrite=False)
 
     return load_eval_df()
 
@@ -67,19 +69,45 @@ def save_eval_df(eval_df):
 
 def load_eval_df():
     eval_path = get_eval_file_path()
-    if not eval_path.exists():
-        eval_df = pd.DataFrame(columns=['trial_id', 'run_path', 'giga_image', 'vrb_image'])
-        save_eval_df(eval_df)
-    return pd.read_csv(eval_path, sep='\t')
+    eval_df = pd.read_csv(eval_path, sep='\t') if eval_path.exists() else pd.DataFrame(columns=EVAL_COLS)
 
-def update_eval_df(update_df, overwrite=False):
+    missing_cols = set(EVAL_COLS) - set(eval_df.columns)
+    for col in missing_cols:
+        eval_df[col] = False if col == ANNOTATED else np.nan
+
+    extra_cols = set(eval_df.columns) - set(EVAL_COLS)
+    if extra_cols:
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        backup_path = eval_path.with_suffix(f".{timestamp}.tsv")
+        eval_df.to_csv(backup_path, sep='\t', index=False)
+        print(f"Warning: Extra columns {extra_cols} found in eval_df. A backup has been saved as '{backup_path}'.")
+        eval_df = eval_df[EVAL_COLS]
+
+    eval_df[ANNOTATED] = ~eval_df.isnull().any(axis=1)
+    save_eval_df(eval_df)
+    return eval_df
+
+def update_eval_df(update_df, overwrite):
     eval_df = load_eval_df()
     if overwrite:
-        new_trials = set(update_df['trial_id'])
-        eval_df = eval_df[~eval_df['trial_id'].isin(new_trials)]
+        new_trials = set(update_df[TRIAL_ID])
+        eval_df = eval_df[~eval_df[TRIAL_ID].isin(new_trials)]
     else:
-        existing_trials = set(eval_df['trial_id'])
-        update_df = update_df[~update_df['trial_id'].isin(existing_trials)]
+        existing_trials = set(eval_df[TRIAL_ID])
+        update_df = update_df[~update_df[TRIAL_ID].isin(existing_trials)]
     eval_df = pd.concat([eval_df, update_df], ignore_index=True)
+    save_eval_df(eval_df)
+    return eval_df
+
+def update_eval_entry(entry, overwrite):
+    trial_id = entry[TRIAL_ID]
+    eval_df = load_eval_df()
+    if trial_id in eval_df[TRIAL_ID].values:
+        if overwrite:
+            eval_df[eval_df[TRIAL_ID] == trial_id] = entry
+        else:
+            warn(f"Overwrite set to true and trial id {trial_id} exists.")
+    else:
+        eval_df = pd.concat([eval_df, pd.DataFrame([entry])], ignore_index=True)
     save_eval_df(eval_df)
     return eval_df
