@@ -162,3 +162,4 @@ cython_debug/
 image_list.txt
 aff-bench/
 .DS_store
+ycb/
