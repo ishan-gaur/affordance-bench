@@ -4,7 +4,6 @@ from config import *
 
 
 def num_same(entry, submit):
-    print(entry)
     num_same = st.number_input('Number Same', min_value=0, max_value=SIM_OBJECTS, 
                                value=entry[NUM_SAME], step=1)
     if submit:
@@ -13,19 +12,13 @@ def num_same(entry, submit):
 
 def common_cols(entry, submit, prefix):
     def obj_modes(entry, submit):
-        try:
-            modes_list = entry[prefix + OBJ_MODES].split(",")
-        except AttributeError:
-            modes_list = [None] * SIM_OBJECTS
-        if not all(isinstance(m, int) for m in modes_list) or len(modes_list) != SIM_OBJECTS:
-            modes_list = [None] * SIM_OBJECTS
+        modes_str = entry.get(prefix + OBJ_MODES, "")
 
-        st.subheader("Objects Left to Right")
-        for i in range(SIM_OBJECTS):
-            title = f'Modes for Object {i+1}'
-            mode = st.number_input(title, min_value=0, step=1,
-                                   value=modes_list[i], key=prefix+title)
-            modes_list.append(mode)
+        st.subheader("Number of Modes per Object")
+        modes_input = st.text_input("Enter comma-separated number of modes for each object, left to right, top to bottom",
+                                     value=modes_str, key=prefix+"modes_input")
+        modes_list = [int(m.strip()) if m.strip().isdigit() else None for m in modes_input.split(",")]
+
         if submit:
             entry[prefix + OBJ_MODES] = ",".join([str(m) if m is not None else "" for m in modes_list])
         return entry

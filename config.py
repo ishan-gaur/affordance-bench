@@ -9,12 +9,12 @@ VRB_IMAGES_FOLDER = 'vrb'
 EVAL_FILE = 'evals.tsv'
 TRIAL_ID, RUN_PATH, GIGA_PATH, VRB_PATH = 'trial_id', 'run_path', 'giga_image', 'vrb_image'
 NUM_SAME, ANNOTATED = 'num_same', 'is_annotated'
-SAMPLE_COLS = [TRIAL_ID, RUN_PATH, GIGA_PATH, VRB_PATH, NUM_SAME, ANNOTATED]
+ID_COLS = [TRIAL_ID, RUN_PATH, GIGA_PATH, VRB_PATH, ANNOTATED]
 OBJ_MODES, NUM_FP = 'modes_per_object', 'num_false_positives'
 _common_cols = [OBJ_MODES, NUM_FP] # need to be annotated for each
 GIGA_PREFIX, VRB_PREFIX = 'giga_', 'vrb_'
 GIGA_COLS, VRB_COLS = [GIGA_PREFIX + c for c in _common_cols], [VRB_PREFIX + c for c in _common_cols]
-
-EVAL_COLS = SAMPLE_COLS + GIGA_COLS + VRB_COLS
+ANNOTATION_COLS = [NUM_SAME] + GIGA_COLS + VRB_COLS
+EVAL_COLS = ID_COLS + ANNOTATION_COLS
 
 SIM_OBJECTS = 5
