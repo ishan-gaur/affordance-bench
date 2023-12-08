@@ -1,8 +1,6 @@
 from pathlib import Path
 
-# EXP_DIR = Path.cwd() / "experiments"
-EXP_DIR = Path.cwd() / "horizontal_exp"
-# EXP_DIR = Path.cwd() / "experiments"
+EXP_DIR = Path.cwd() / "top_exp"
 SCENE_IMAGES_FOLDER = 'rgb_images'
 GIGA_AFF_MESH_FOLDER = 'grasps'
 GIGA_IMAGES_FOLDER = 'grasp_images'
