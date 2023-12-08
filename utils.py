@@ -5,8 +5,7 @@ from warnings import warn
 import numpy as np
 import pandas as pd
 
-from config import EXP_DIR, GIGA_IMAGES_FOLDER, VRB_IMAGES_FOLDER
-from config import EVAL_FILE, EVAL_COLS, ANNOTATION_COLS, TRIAL_ID, RUN_PATH, GIGA_PATH, VRB_PATH, ANNOTATED
+from config import *
 
 def setup():
     runs = get_all_runs(EXP_DIR)
@@ -21,14 +20,13 @@ def setup():
             continue
 
         trials, giga_paths, vrb_images, corrupted = get_run_trials(run_path)
-        if corrupted:
-            continue
 
         update_df = pd.DataFrame({
             TRIAL_ID: trials,
             RUN_PATH: [run_path] * len(trials),
             GIGA_PATH: giga_paths,
-            VRB_PATH: vrb_images
+            VRB_PATH: vrb_images,
+            CORRUPTED: [corrupted] * len(trials)
         })
 
         update_eval_df(update_df, overwrite=False)
@@ -76,8 +74,16 @@ def load_eval_df():
     eval_df = pd.read_csv(eval_path, sep='\t') if eval_path.exists() else pd.DataFrame(columns=EVAL_COLS)
 
     missing_cols = set(EVAL_COLS) - set(eval_df.columns)
+    if len(missing_cols) > 0:
+        warn(f"Loaded df is missing columns: {missing_cols}")
+        
     for col in missing_cols:
-        eval_df[col] = False if col == ANNOTATED else np.nan
+        if col == ANNOTATED:
+            eval_df[col] = False
+        elif col == CORRUPTED:
+            eval_df[col] = False
+        else:
+            eval_df[col] = np.nan
 
     extra_cols = set(eval_df.columns) - set(EVAL_COLS)
     if extra_cols:
@@ -89,7 +95,8 @@ def load_eval_df():
 
     annotation_df = eval_df[ANNOTATION_COLS]
     eval_df[ANNOTATED] = ~annotation_df.isnull().any(axis=1)
-    return save_eval_df(eval_df)
+    eval_df = save_eval_df(eval_df)
+    return eval_df
 
 def update_eval_df(update_df, overwrite):
     print("update df")
@@ -111,7 +118,7 @@ def update_eval_entry(entry, overwrite):
         if overwrite:
             eval_df[eval_df[TRIAL_ID] == trial_id] = entry
         else:
-            warn(f"Overwrite set to true and trial id {trial_id} exists.")
+            warn(f"Overwrite set to False and trial id {trial_id} exists.")
     else:
         eval_df = pd.concat([eval_df, pd.DataFrame([entry])], ignore_index=True)
     return save_eval_df(eval_df)

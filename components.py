@@ -11,16 +11,27 @@ def num_same(entry, submit):
     return entry
 
 def common_cols(entry, submit, prefix):
-    def obj_modes(entry, submit):
-        modes_str = entry.get(prefix + OBJ_MODES, "")
+    st.subheader("Number of Modes per Object")
+    st.write("Enter comma-separated number of modes for each object, left to right, top to bottom")
 
-        st.subheader("Number of Modes per Object")
-        modes_input = st.text_input("Enter comma-separated number of modes for each object, left to right, top to bottom",
-                                     value=modes_str, key=prefix+"modes_input")
+    def num_pos_modes(entry, submit):
+        modes_str = entry.get(prefix + POS_MODES, "")
+
+        modes_input = st.text_input("Positional Modes", value=modes_str, key=prefix+"pos_modes_input")
         modes_list = [int(m.strip()) if m.strip().isdigit() else None for m in modes_input.split(",")]
 
         if submit:
-            entry[prefix + OBJ_MODES] = ",".join([str(m) if m is not None else "" for m in modes_list])
+            entry[prefix + POS_MODES] = ",".join([str(m) if m is not None else "" for m in modes_list])
+        return entry
+
+    def num_dir_modes(entry, submit):
+        dir_modes_str = entry.get(prefix + DIR_MODES, "")
+
+        dir_modes_input = st.text_input("Directional Modes", value=dir_modes_str, key=prefix+"dir_modes_input")
+        dir_modes_list = [int(m.strip()) if m.strip().isdigit() else None for m in dir_modes_input.split(",")]
+
+        if submit:
+            entry[prefix + DIR_MODES] = ",".join([str(m) if m is not None else "" for m in dir_modes_list])
         return entry
 
     def num_false_positives(entry, submit):
@@ -36,6 +47,7 @@ def common_cols(entry, submit, prefix):
             entry[prefix + NUM_FP] = num_fp
         return entry
 
-    entry = obj_modes(entry, submit)
+    entry = num_pos_modes(entry, submit)
+    entry = num_dir_modes(entry, submit)
     entry = num_false_positives(entry, submit)
     return entry
