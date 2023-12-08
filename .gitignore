@@ -163,3 +163,4 @@ image_list.txt
 aff-bench/
 .DS_store
 ycb/
+evals_checkpoint_*.tsv
