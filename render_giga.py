@@ -39,9 +39,9 @@ for trial_folder in exp_folder.iterdir():
         if view == "side":
             scene.set_camera(distance=2.0 * scene_size, angles=[np.pi / 3, 0, 0])
         elif view == "top":
-            scene.set_camera(distance=2.0 * scene_size, angles=[0, 0, 0])
+                scene.set_camera(distance=2.0 * scene_size, angles=[0, 0, np.pi / 2])
         elif view == "horizontal":
-            scene.set_camera(distance=2.0 * scene_size, angles=[np.pi / 2.1, 0, 0])
+            scene.set_camera(distance=2.0 * scene_size, angles=[np.pi / 2.1, 0, np.pi / 2])
         png = scene.save_image()
 
         image_path = image_folder / grasp_path.stem

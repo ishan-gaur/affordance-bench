@@ -41,7 +41,7 @@ def common_cols(entry, submit, prefix):
             num_fp = None
 
         title = f'Number of False Positives'
-        num_fp = st.number_input(title, min_value=0, max_value=SIM_OBJECTS, step=1, value=num_fp,
+        num_fp = st.number_input(title, min_value=0, max_value=SIM_OBJECTS, step=1, value=0,
                                  placeholder="Enter number of false positives", key=prefix+title)
         if submit:
             entry[prefix + NUM_FP] = num_fp
