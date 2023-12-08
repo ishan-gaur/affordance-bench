@@ -40,3 +40,8 @@ images. however, I did have to install scipy and networkx in addition to
 pyglet<2, and run defaults write org.python.python ApplePersistenceIgnoreState NO
 Then I needed to get rid of the cocoa error by disabling the alternate event
 controller backend in pyglet, which I documented on a recent issue on the repo
+
+Key Commands:
+```
+python scripts/sim_grasp_table.py --num-view 1 --num-rounds 1 --object-set pile/test --scene pile  --view horizontal --force --best --model data/models/giga_pile.pt --type giga --result-path data/experiments/result.json --vis --seeds 10 --logdir data/horizontal_exp --zoom 2
+```
