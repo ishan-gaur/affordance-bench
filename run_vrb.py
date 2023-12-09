@@ -5,7 +5,7 @@ from tqdm import tqdm
 import subprocess
 vrb_repo = Path("~/vrb").expanduser()
 giga_repo = Path("~/GIGA").expanduser()
-overwrite = False
+overwrite = True
 debug = False
 
 def run_command_on_subdirectories(directory_path):
@@ -48,7 +48,7 @@ def run_command_on_subdirectories(directory_path):
     python {vrb_repo}/aff_bench_inference.py --image_list {image_list_file} \
     --obj_list {giga_repo}/object_list.txt \
     --model_path {vrb_repo}/models/model_checkpoint_1249.pth.tar \
-    --max_box 5 {'--debug' if debug else ''}
+    --max_box 1 {'--debug' if debug else ''}
     """
     command = program
     subprocess.run(command, shell=True)
