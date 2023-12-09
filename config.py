@@ -1,12 +1,12 @@
 from pathlib import Path
 
-EXP_DIR = Path.cwd() / "experiments"
+EXP_DIR = Path.cwd() / "top_exp"
 SCENE_IMAGES_FOLDER = 'rgb_images'
 GIGA_AFF_MESH_FOLDER = 'grasps'
 GIGA_IMAGES_FOLDER = 'grasp_images'
 VRB_IMAGES_FOLDER = 'vrb'
 
-EVAL_FILE = 'evals.tsv'
+EVAL_FILE = EXP_DIR.name + 'evals.tsv'
 TRIAL_ID, RUN_PATH, GIGA_PATH, VRB_PATH = 'trial_id', 'run_path', 'giga_image', 'vrb_image'
 NUM_SAME, ANNOTATED, CORRUPTED = 'num_same', 'is_annotated', 'corrupted'
 ID_COLS = [TRIAL_ID, RUN_PATH, GIGA_PATH, VRB_PATH, ANNOTATED, CORRUPTED]
