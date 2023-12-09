@@ -5,7 +5,7 @@ from tqdm import tqdm
 import subprocess
 vrb_repo = Path("~/vrb").expanduser()
 giga_repo = Path("~/GIGA").expanduser()
-overwrite = True
+overwrite = False
 debug = False
 
 def run_command_on_subdirectories(directory_path):
